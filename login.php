@@ -1,37 +1,35 @@
-<?php
-require_once('db.php');
+<?php 
+include 'connect.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+$email = $_POST['email'];  
+$password = $_POST['password'];  
 
-    // Fetch user data from the database
-    $query = "SELECT users.id, username, password, role_id, roles.name as role_name FROM users JOIN roles ON users.role_id = roles.id WHERE username=?";
-    $stmt = $conn->prepare($query);
-    $stmt->execute([$username]);
+$sql = "SELECT * FROM logins WHERE email = '$email'";
+$result = mysqli_query($conn, $sql);
+$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+$count = mysqli_num_rows($result);
 
-    if ($stmt->rowCount() > 0) {
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+if ($count == 1) {
+    $hashedPassword = $row['password'];
 
-        if (password_verify($password, $user['password'])) {
-            // Start a session and store user information
-            session_start();
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['role'] = $user['role_name'];
-
-            // Redirect based on user role
-            if ($_SESSION['role'] == 'admin') {
-                header('Location: admin_profile.php');
-            } else {
-                header('Location: user_profile.php');
-            }
-            exit();
-        }
+    if (password_verify($password, $hashedPassword)) {
+        echo "Login successfully.";  
+    } else {
+        echo "Login failed. Invalid username or password.";
     }
-
-    // Redirect to login page if login fails
-    header('Location: login.html');
-    exit();
+} else {
+    echo "Login failed. Invalid username or password.";  
 }
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Your Data</h2>  
+    <button><a href="user_profile.php">your data</a></button>
+</body>
+</html>
