@@ -1,35 +1,58 @@
-<?php 
+<?php
+session_start();
 include 'connect.php';
 
-$email = $_POST['email'];  
-$password = $_POST['password'];  
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
-$sql = "SELECT * FROM logins WHERE email = '$email'";
-$result = mysqli_query($conn, $sql);
-$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-$count = mysqli_num_rows($result);
+    $sql = "SELECT id, fname, email, password, role, image FROM logins WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $count = $result->num_rows;
 
-if ($count == 1) {
-    $hashedPassword = $row['password'];
+    if ($count == 1) {
+        $hashedPassword = $row['password'];
+        if (password_verify($password, $hashedPassword)) {
+            $_SESSION['email'] = $email;
+            $_SESSION['fname'] = $row['fname'];
+            $_SESSION['role'] = $row['role'];
+            $_SESSION['image'] = $row['image'];
+            $_SESSION['password'] = $row['password']; // Include password in session if needed
 
-    if (password_verify($password, $hashedPassword)) {
-        echo "Login successfully.";  
+            if ($_SESSION['role'] === 'admin') {
+                //yaha r check mhoga agar user na admin ka role select kiya ha to ussa dashboard ma records show hoga
+                header("Location: dashboard.php");
+                exit();
+            } else {
+                                header("Location: dashboard.php");
+                exit();
+            }
+        } else {
+            echo "<h3>Login failed. Invalid Password.</h3>";
+        }
     } else {
-        echo "Login failed. Invalid username or password.";
+        echo  "<h3>Login failed. Invalid Username and password</h3>";
+        
     }
-} else {
-    echo "Login failed. Invalid username or password.";  
 }
+
+$conn->close();
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Login</title>
 </head>
 <body>
-    <h2>Your Data</h2>  
-    <button><a href="user_profile.php">your data</a></button>
+    <button><a href="login.html">Go Back</a></button>
 </body>
 </html>

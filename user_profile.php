@@ -3,7 +3,7 @@ include 'connect.php';
 session_start();
 
 // Redirect to login page if not logged in
-if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'email') {
+if (!isset($_SESSION['email']) || $_SESSION['email'] !== 'email') {
    // header('Location: login.html');
     exit();
 }
@@ -27,13 +27,16 @@ $imagePath = $_SESSION['image_path'];
     <h1>Welcome, <?php echo $name; ?>!</h1>
     <p>Email: <?php echo $email; ?></p>
 
+
     <?php
     if (!empty($imagePath)) {
         echo "<img src='$imagePath' alt='User Image' width='100'>";
     } else {
         echo "No image available.";
     }
+    
     ?>
+                        <a href='admin_profile.php?id={$row['id']}'>Edit</a>
 
 
 </body>
