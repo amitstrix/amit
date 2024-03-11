@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// yaha check karna ha agar user na admin role select kiya ha
 if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
     header('Location: dashboard.php');
     exit();
@@ -9,19 +8,19 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
 
 include "connect.php";
 
-// Fetch user data based on ID or email
 $userId = isset($_GET['id']) ? $_GET['id'] : '';
 $userData = [];
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' && !empty($userId)) {
-    // Check if the provided ID is numeric
     if (is_numeric($userId)) {
-        $selectQuery = "SELECT * FROM logins WHERE id='$userId'";
+        $selectQuery = $conn->prepare("SELECT * FROM logins WHERE id=?");
     } else {
-        $selectQuery = "SELECT * FROM logins WHERE email='$userId'";
+        $selectQuery = $conn->prepare("SELECT * FROM logins WHERE email=?");
     }
 
-    $result = $conn->query($selectQuery);
+    $selectQuery->bind_param("s", $userId);
+    $selectQuery->execute();
+    $result = $selectQuery->get_result();
 
     if ($result->num_rows > 0) {
         $userData = $result->fetch_assoc();
@@ -30,37 +29,40 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' && !empty($userId)) {
     }
 }
 
-// Check if the form is submitted for updating user data // yaha pr check karna ha ki user ka  data update hoga
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Handle the image upload
+    $newFname = $_POST['fname'];
+    $newLname = $_POST['lname'];
+    $newPassword = $_POST['password'];
+    $newEmail = $_POST['email']; // Add this line
+
+    $passwordUpdate = !empty($newPassword) ? ", password='" . password_hash($newPassword, PASSWORD_DEFAULT) . "'" : "";
+
+    $updateQuery = $conn->prepare("UPDATE logins SET fname=?, lname=?, email=? $passwordUpdate WHERE id=? OR email=?");
+    $updateQuery->bind_param("sssss", $newFname, $newLname, $newEmail, $userId, $userId);
+
+    if ($updateQuery->execute() === TRUE) {
+        echo "User data updated successfully";
+        header('Location: dashboard.php');
+        exit();
+    } else {
+        echo "Error updating user data: " . $conn->error;
+    }
+
+    $updateQuery->close();
+
+    // Handle image upload separately
     $uploadDir = 'uploads/';
     $uploadFile = $uploadDir . basename($_FILES['profileImage']['name']);
 
     if (move_uploaded_file($_FILES['profileImage']['tmp_name'], $uploadFile)) {
-        // Update the user's data with the new image path
-        $updateImageQuery = "UPDATE logins SET image='$uploadFile' WHERE id='$userId' OR email='$userId'";
-        if ($conn->query($updateImageQuery) !== TRUE) {
+        $updateImageQuery = $conn->prepare("UPDATE logins SET image=? WHERE id=? OR email=?");
+        $updateImageQuery->bind_param("sss", $uploadFile, $userId, $userId);
+
+        if ($updateImageQuery->execute() !== TRUE) {
             echo "Error updating image path in the database: " . $conn->error;
         }
 
-        // Update the user's other data (fname, lname, password)
-        $newFname = $_POST['fname'];
-        $newLname = $_POST['lname'];
-        $newPassword = $_POST['password'];
-
-        // Check if the password field is not empty before updating
-        $passwordUpdate = !empty($newPassword) ? ", password='" . password_hash($newPassword, PASSWORD_DEFAULT) . "'" : "";
-
-        // Update user data in the database based on ID or email
-        $updateQuery = "UPDATE logins SET fname='$newFname', lname='$newLname' $passwordUpdate WHERE id='$userId' OR email='$userId'";
-
-        if ($conn->query($updateQuery) === TRUE) {
-            echo "User data updated successfully";
-            header('Location: dashboard.php');
-            exit();  // Make sure to exit after the header to prevent further execution
-        } else {
-            echo "Error updating user data: " . $conn->error;
-        }
+        $updateImageQuery->close();
     } else {
         echo "Error uploading image.";
     }
@@ -96,6 +98,9 @@ $conn->close();
 
                 <label for="lname">Last Name:</label>
                 <input type="text" id="lname" name="lname" value="<?php echo isset($userData['lname']) ? $userData['lname'] : ''; ?>" required><br>
+               
+                <label for="lname">Email:</label>
+                <input type="email" id="email" name="email" value="<?php echo isset($userData['email']) ? $userData['email'] : ''; ?>" required><br>
 
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" placeholder="Enter new password"><br>
@@ -107,4 +112,5 @@ $conn->close();
 </div>
 
 </body>
+</html></body>
 </html>

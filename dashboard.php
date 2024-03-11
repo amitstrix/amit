@@ -2,15 +2,7 @@
 include 'connect.php';
 session_start();
 $imagePath = $_SESSION['image'];
-echo "Your image: <img class='rounded-circle' src='$imagePath' alt='Image' width='100' height='100' >";
-        echo "<br>";
-        echo "Welocome : " .$_SESSION['fname'];
-        echo "<br>";
-        echo "Your email: " . $_SESSION['email'];
-        echo "<br>";
-
-        echo "Your Password: " . $_SESSION['password'];
-        ?>
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -126,14 +118,14 @@ echo "Your image: <img class='rounded-circle' src='$imagePath' alt='Image' width
         <p><a class="btn btn-secondary" href="#">View details »</a></p>
       </div><!-- /.col-lg-4 -->
     </div><!-- /.row -->
-<?php
-    // idhar check karna user  logged in ho gya ha 
+    <?php
+// idhar check karna user  logged in ho gya ha 
 if (!isset($_SESSION['email'])) {
     header("Location: login.html"); //idhar login.html location deni ha
     exit();
 }
 
-//idhar check hona ya agar user na admin role select lkiya ha to ussa table show hona chaiya
+// idhar check hona ya agar user na admin role select lkiya ha to ussa table show hona chaiya
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     // yaha database ka sara record fetch karna ha
     $userRecordsQuery = "SELECT id, fname, email FROM logins";
@@ -158,7 +150,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
                     <td>{$row['fname']}</td>
                     <td>{$row['email']}</td>
                     <td>
-                        <a href='admin_profile.php?id={$row['id']}'>Edit</a>
+                        <a href='admin_.php?id={$row['id']}'>Edit</a>
                         <a href='delete_user.php?id={$row['id']}' onclick='return confirm(\"Are you sure?\")'>Delete</a>
                     </td>
                 </tr>";
@@ -174,6 +166,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
 
 $conn->close();
 ?>
+
   </div>
   <div class="container">
   <footer class="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 my-5 border-top">
