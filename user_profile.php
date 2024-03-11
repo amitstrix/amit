@@ -36,7 +36,7 @@ $imagePath = $_SESSION['image_path'];
     }
     
     ?>
-                        <a href='admin_profile.php?id={$row['id']}'>Edit</a>
+                        <a href='admin_profile.php?id={$row[id]}'>Edit</a>
 
 
 </body>
