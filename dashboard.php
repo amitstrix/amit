@@ -41,8 +41,7 @@ echo "Your image: <img class='rounded-circle' src='$imagePath' alt='Image' width
             <li><a class="dropdown-item" href="edit.php">Profile</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="logout.php">Logout</a></li>
-            <li><a class="dropdown-item" href="registration.html">Registration</a></li>
-            <li><a class="dropdown-item" href="login.html">Login</a></li>
+            
           </ul>
         </div>
       </div>
