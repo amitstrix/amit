@@ -12,7 +12,7 @@ if (!isset($_SESSION['email']) || $_SESSION['email'] !== 'email') {
 $email = $_SESSION['email'];
 $name = $_SESSION['name']; 
 $imagePath = $_SESSION['image_path'];
-
+ 
 ?>
 
 <!DOCTYPE html>

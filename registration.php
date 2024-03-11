@@ -2,7 +2,7 @@
 include "connect.php";
 
 $fname = $_POST['fname'];
-$lname = $_POST['lname'];
+$lname = $_POST['lname']; 
 $email = $_POST['email'];
 $role = $_POST['role'];
 $password = password_hash($_POST['password'], PASSWORD_DEFAULT);

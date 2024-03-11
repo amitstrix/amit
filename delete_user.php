@@ -7,7 +7,7 @@ if (isset($_GET['id'])) {
     // Use prepared statement to prevent SQL injection
     $sql = "DELETE FROM logins WHERE id = ?";
     $stmt = mysqli_prepare($conn, $sql);
-
+ 
     // Bind parameters
     mysqli_stmt_bind_param($stmt, "i", $userIdToDelete);
 
