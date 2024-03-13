@@ -19,11 +19,16 @@ $imagePath = $_SESSION['image'];
         </a>
 
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><a href="#hero" class="nav-link px-2 link-secondary">Home</a></li>
-          <li><a href="#aboutus" class="nav-link px-2 link-body-emphasis">About</a></li>
-          <li><a href="#services" class="nav-link px-2 link-body-emphasis">Services</a></li>
-          <li><a href="#table" class="nav-link px-2 link-body-emphasis">Records</a></li>
-        </ul>
+    <li><a href="#hero" class="nav-link px-2 link-secondary">Home</a></li>
+    <li><a href="#aboutus" class="nav-link px-2 link-body-emphasis">About</a></li>
+    <li><a href="#services" class="nav-link px-2 link-body-emphasis">Services</a></li>
+    <li><a href="#table" class="nav-link px-2 link-body-emphasis">Records</a></li>
+    <?php
+    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+        echo "<li><a href='service.html' class='nav-link px-2 link-body-emphasis'>Add Services</a></li>";
+    }
+    ?>
+</ul>
 
         <div class="dropdown text-end">
           <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -146,7 +151,6 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     if ($userRecordsResult->num_rows > 0) {
         while ($row = $userRecordsResult->fetch_assoc()) {
             echo "<tr>
-                    <td>{$row['id']}</td>
                     <td>{$row['fname']}</td>
                     <td>{$row['email']}</td>
                     <td>
