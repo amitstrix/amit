@@ -2,7 +2,7 @@
 session_start();
 include "connect.php";
 
-$name = $_POST['name'];
+$name = $_POST['name']; 
 $desc = $_POST['description'];
 
 if ($result->num_rows > 0) {

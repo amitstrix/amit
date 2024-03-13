@@ -5,7 +5,7 @@ include 'connect.php';
 if (isset($_GET['id'])) {
     $userIdToDelete = $_GET['id'];
 
-//yaha id delete kara
+//yaha id delete kara 
     $sql = "DELETE FROM logintable WHERE id = ?";
     $stmt = mysqli_prepare($conn, $sql);
  

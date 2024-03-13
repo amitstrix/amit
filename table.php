@@ -5,7 +5,7 @@ include 'connect.php';
 $sql = "SELECT id, name, description, image FROM logintable WHERE (name, description, image, id) IN (SELECT name, description, image, MAX(id) FROM logintable GROUP BY name, description, image) ORDER BY id ASC";
 $result = $conn->query($sql);
 ?>
-
+ 
 <!DOCTYPE html>
 <html lang="en">
 
