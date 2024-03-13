@@ -26,7 +26,7 @@ $result = $conn->query($sql);
             </tr>
             <?php
             while ($rows = $result->fetch_assoc()) {
-            ?>
+            ?> 
                 <tr>
                     <td><?php echo $rows['id']; ?></td>
                     <td><?php echo $rows['name']; ?></td>

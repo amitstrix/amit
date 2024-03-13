@@ -8,7 +8,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     // yaha user data from the database
     $sql = "SELECT * FROM logintable WHERE id = ?";
     $stmt = $conn->prepare($sql);
-
+ 
     if ($stmt) {
         $stmt->bind_param("i", $_SESSION['id']);
         $stmt->execute();

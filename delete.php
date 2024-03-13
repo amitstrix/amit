@@ -12,7 +12,7 @@ if (isset($_GET['id'])) {
     // Bind parameters
     mysqli_stmt_bind_param($stmt, "i", $userIdToDelete);
 
-    // Execute the statement
+    // Execute the statement 
     mysqli_stmt_execute($stmt);
 
     // Check for errors
