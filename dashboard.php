@@ -23,6 +23,7 @@ $imagePath = $_SESSION['image'];
     <li><a href="#aboutus" class="nav-link px-2 link-body-emphasis">About</a></li>
     <li><a href="userservice.php" class="nav-link px-2 link-body-emphasis">Services</a></li>
     <li><a href="#some" class="nav-link px-2 link-body-emphasis">Services Table</a></li>
+    <li><a href="#producttable" class="nav-link px-2 link-body-emphasis">Product Table</a></li>
     <li><a href="#table" class="nav-link px-2 link-body-emphasis">Records</a></li>
     <li><a href="product.php" class="nav-link px-2 link-body-emphasis">Product</a></li>
     <?php
@@ -160,7 +161,7 @@ $sql = "SELECT id, name, description, image FROM logintable WHERE (name, descrip
 $result = $conn->query($sql)
 ?>
 
-<table class="table   style=width: 100%; table-bordered">
+<table class="table   style=width: 100%; table-bordered" id="producttable">
 
 <h1>Product Data</h1>
     <thead>
