@@ -21,8 +21,10 @@ $imagePath = $_SESSION['image'];
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
     <li><a href="#hero" class="nav-link px-2 link-secondary">Home</a></li>
     <li><a href="#aboutus" class="nav-link px-2 link-body-emphasis">About</a></li>
-    <li><a href="#services" class="nav-link px-2 link-body-emphasis">Services</a></li>
+    <li><a href="userservice.php" class="nav-link px-2 link-body-emphasis">Services</a></li>
+    <li><a href="#some" class="nav-link px-2 link-body-emphasis">Services Table</a></li>
     <li><a href="#table" class="nav-link px-2 link-body-emphasis">Records</a></li>
+    <li><a href="product.php" class="nav-link px-2 link-body-emphasis">Product</a></li>
     <?php
     if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
         echo "<li><a href='service.html' class='nav-link px-2 link-body-emphasis'>Add Services</a></li>";
@@ -105,24 +107,97 @@ $imagePath = $_SESSION['image'];
     <div class="container marketing" id="services">
 
     <!-- Three columns of text below the carousel -->
-    <div class="row">
-        <h2>Services</h2>
-      <div class="col-lg-4">
-        <h2 class="fw-normal">Content</h2>
-        <p>Some representative placeholder content for the three columns of text below the carousel. This is the first column.</p>
-        <p><a class="btn btn-secondary" href="#">View details »</a></p>
-      </div><!-- /.col-lg-4 -->
-      <div class="col-lg-4">
-        <h2 class="fw-normal">Exciting</h2>
-        <p>Another exciting bit of representative placeholder content. This time, we've moved on to the second column.</p>
-        <p><a class="btn btn-secondary" href="#">View details »</a></p>
-      </div><!-- /.col-lg-4 -->
-      <div class="col-lg-4">
-        <h2 class="fw-normal">Lastly</h2>
-        <p>And lastly this, the third column of representative placeholder content.</p>
-        <p><a class="btn btn-secondary" href="#">View details »</a></p>
-      </div><!-- /.col-lg-4 -->
-    </div><!-- /.row -->
+    <!-----idhar services ka table ha --->
+    <?php
+include "connect.php";
+
+$sql = "SELECT id, name, description, image FROM logintable WHERE (name, description, image, id) IN (SELECT name, description, image, MAX(id) FROM logintable GROUP BY name, description, image) ORDER BY id ASC";
+$result = $conn->query($sql);
+?>
+    <div class="main" id="some">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-bordered">
+                        <thead>
+                          <h1>Services Data</h1>
+                            <tr>
+                            <th>Id</th>
+                                <th>Image</th>
+                                <th>Services name</th>
+                                <th>Description</th>
+                                <th>View</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php while ($rows = $result->fetch_assoc()) { ?>
+                                <tr>
+                                <td><h2><?php echo $rows['id']; ?></h2></td>
+                                    <td><img src="<?php echo $rows['image']; ?>" alt="User Image" width="100" height="100"></td>
+                                    <td><h2><?php echo $rows['name']; ?></h2></td>
+                                    <td><p><?php echo $rows['description']; ?></p></td>
+                                    <td><a class="btn btn-primary" href='view.php?id=<?php echo $rows['id']; ?>&name=<?php echo urlencode($rows['name']); ?>&description=<?php echo urlencode($rows['description']); ?>&image=<?php echo urlencode($rows['image']); ?>'>View</a></td>
+                                    <td><a class="btn btn-primary" href='editservices.php?id=<?php echo $rows['id']; ?>&name=<?php echo urlencode($rows['name']); ?>&description=<?php echo urlencode($rows['description']); ?>&image=<?php echo urlencode($rows['image']); ?>'>Edit</a></td>
+                                    <td><a class="btn btn-primary" href='deleteservices.php?id=<?php echo $rows['id']; ?>&name=<?php echo urlencode($rows['name']); ?>&description=<?php echo urlencode($rows['description']); ?>&image=<?php echo urlencode($rows['image']); ?>'>delete</a></td>
+                                    
+                                  </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!---idhar product ka table ha--->
+    <?php
+include 'connect.php';
+$sql = "SELECT id, name, description, image FROM logintable WHERE (name, description, image, id) IN (SELECT name, description, image, MAX(id) FROM logintable GROUP BY name, description, image) ORDER BY id ASC";
+$result = $conn->query($sql)
+?>
+
+<table class="table   style=width: 100%; table-bordered">
+
+<h1>Product Data</h1>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Product Name</th>
+            <th>Description</th>
+            <th>View</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        while ($rows = $result->fetch_assoc()) {
+        ?> 
+        <tr>
+            <td><?php echo $rows['id']; ?></td>
+            <td><img src="<?php echo $rows['image']; ?>" alt="User Image" width="100" height="100"></td>
+            <td><?php echo $rows['name']; ?></td>
+            <td><?php echo $rows['description']; ?></td>
+            <td><a class="btn btn-primary" href='productview.php?id=<?php echo $rows['id']; ?>'>View</a></td>
+            <td><a class="btn btn-primary" href='productedit.php?id=<?php echo $rows['id']; ?>&name=<?php echo urlencode($rows['name']); ?>&description=<?php echo urlencode($rows['description']); ?>&image=<?php echo urlencode($rows['image']); ?>'>Edit</a></td>
+            <td><a class="btn btn-primary" href='productdelete.php?id=<?php echo $rows['id']; ?>&name=<?php echo urlencode($rows['name']); ?>&description=<?php echo urlencode($rows['description']); ?>&image=<?php echo urlencode($rows['image']); ?>'>Delete</a></td>
+        </tr>
+        <?php
+        }
+        ?>
+    </tbody>
+      </table>
+
+
+
+
+<!-----idhar database table ha--->
+
     <?php
 // idhar check karna user  logged in ho gya ha 
 if (!isset($_SESSION['email'])) {
@@ -151,10 +226,11 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     if ($userRecordsResult->num_rows > 0) {
         while ($row = $userRecordsResult->fetch_assoc()) {
             echo "<tr>
+                    <td>{$row['id']}</td>
                     <td>{$row['fname']}</td>
                     <td>{$row['email']}</td>
                     <td>
-                        <a href='admin_.php?id={$row['id']}'>Edit</a>
+                        <a href='admin_profile.php?id={$row['id']}'>Edit</a>
                         <a href='delete_user.php?id={$row['id']}' onclick='return confirm(\"Are you sure?\")'>Delete</a>
                     </td>
                 </tr>";
@@ -195,7 +271,6 @@ $conn->close();
         <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">About</a></li>
       </ul>
     </div>
-
     <div class="col mb-3">
       <h5>Section</h5>
       <ul class="nav flex-column">

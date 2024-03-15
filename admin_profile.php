@@ -1,12 +1,11 @@
 <?php
 session_start();
-
+include 'header.php';
+include "connect.php";
 if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
     header('Location: dashboard.php');
     exit();
 }
-
-include "connect.php";
 
 $userId = isset($_GET['id']) ? $_GET['id'] : '';
 $userData = [];
@@ -33,12 +32,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newFname = $_POST['fname'];
     $newLname = $_POST['lname'];
     $newPassword = $_POST['password'];
-    $newEmail = $_POST['email']; // Add this line
+    $newEmail = $_POST['email']; 
+
+    // Handle image upload separately
+    $image = '';
+
+    if ($_FILES['profileImage']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = 'uploads/';
+        $uploadFile = $uploadDir . basename($_FILES['profileImage']['name']);
+        if (move_uploaded_file($_FILES['profileImage']['tmp_name'], $uploadFile)) {
+            $image = $uploadFile;
+        } else {
+            echo "Error uploading image.";
+        }
+    }
 
     $passwordUpdate = !empty($newPassword) ? ", password='" . password_hash($newPassword, PASSWORD_DEFAULT) . "'" : "";
 
-    $updateQuery = $conn->prepare("UPDATE logins SET fname=?, lname=?, email=? $passwordUpdate WHERE id=? OR email=?");
-    $updateQuery->bind_param("sssss", $newFname, $newLname, $newEmail, $userId, $userId);
+    $updateQuery = $conn->prepare("UPDATE logins SET image=?, fname=?, lname=?, email=? $passwordUpdate WHERE id=? OR email=?");
+    $updateQuery->bind_param("ssssss", $image, $newFname, $newLname, $newEmail, $userId, $userId);
 
     if ($updateQuery->execute() === TRUE) {
         echo "User data updated successfully";
@@ -49,23 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $updateQuery->close();
-
-    // Handle image upload separately
-    $uploadDir = 'uploads/';
-    $uploadFile = $uploadDir . basename($_FILES['profileImage']['name']);
-
-    if (move_uploaded_file($_FILES['profileImage']['tmp_name'], $uploadFile)) {
-        $updateImageQuery = $conn->prepare("UPDATE logins SET image=? WHERE id=? OR email=?");
-        $updateImageQuery->bind_param("sss", $uploadFile, $userId, $userId);
-
-        if ($updateImageQuery->execute() !== TRUE) {
-            echo "Error updating image path in the database: " . $conn->error;
-        }
-
-        $updateImageQuery->close();
-    } else {
-        echo "Error uploading image.";
-    }
 }
 
 $conn->close();
@@ -92,14 +87,14 @@ $conn->close();
             ?>
             <form method="post" action="" enctype="multipart/form-data">
                 <label for="profileImage">Change Profile Picture:</label>
-                <input type="file" name="profileImage" id="profileImage" accept="image/*">
+                <input type="file" name="profileImage" id="profileImage" accept="image/*"><br>
                 <label for="fname">First Name:</label>
                 <input type="text" id="fname" name="fname" value="<?php echo isset($userData['fname']) ? $userData['fname'] : ''; ?>" required><br>
 
                 <label for="lname">Last Name:</label>
                 <input type="text" id="lname" name="lname" value="<?php echo isset($userData['lname']) ? $userData['lname'] : ''; ?>" required><br>
                
-                <label for="lname">Email:</label>
+                <label for="email">Email:</label>
                 <input type="email" id="email" name="email" value="<?php echo isset($userData['email']) ? $userData['email'] : ''; ?>" required><br>
 
                 <label for="password">Password:</label>
@@ -110,7 +105,5 @@ $conn->close();
         </div>
     </div>
 </div>
-
 </body>
-</html></body>
 </html>

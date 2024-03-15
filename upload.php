@@ -1,7 +1,7 @@
 <?php
 session_start();
+include 'header.php';
 include 'connect.php'; // Make sure to include your database connection file
-
 if (!isset($_SESSION['email'])) {
     header('Location: login.html'); 
     exit();

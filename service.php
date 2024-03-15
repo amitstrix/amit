@@ -1,7 +1,7 @@
 <?php
 session_start();
+include 'header.php';
 include "connect.php";
-
 $name = $_POST['name']; 
 $desc = $_POST['description'];
 
