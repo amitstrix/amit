@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'header.php';
+//include 'header.php';
 include "connect.php";
 // Redirect if user is not logged in as admin
 if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {

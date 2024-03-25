@@ -1,9 +1,8 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-include 'header.php';
-include 'connect.php';
 session_start();
+include 'connect.php';
 
 if (!isset($_SESSION['email'])) {
     header('Location: login.html');
@@ -14,8 +13,11 @@ $email = $_SESSION['email'];
 $password = $_SESSION['password'];
 
 // Fetch user data from the database
-$sql = "SELECT fname, lname, email, image FROM logins WHERE email = '$email'";
-$result = mysqli_query($conn, $sql);
+$sql = "SELECT fname, lname, email, image FROM logins WHERE email = ?";
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "s", $email);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 
 if ($result) {
     $row = mysqli_fetch_assoc($result);
@@ -33,38 +35,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newEmail = $_POST['email'];
 
     // Update the user's first, last name, and email in the database
-    $updateSql = "UPDATE logins SET fname = '$newFname', lname = '$newLname', email = '$newEmail' WHERE email = '$email'";
-    $updateResult = mysqli_query($conn, $updateSql);
+    $updateSql = "UPDATE logins SET fname = ?, lname = ?, email = ? WHERE email = ?";
+    $stmt = mysqli_prepare($conn, $updateSql);
+    mysqli_stmt_bind_param($stmt, "ssss", $newFname, $newLname, $newEmail, $email);
+    mysqli_stmt_execute($stmt);
 
-    if (!$updateResult) {
+    if (!$stmt) {
         // Handle update error
         die('Error updating user data: ' . mysqli_error($conn));
     }
 
-    // ... (previous code)
+    // Handle image upload
+    if (!empty($_FILES['profileImage']['name'])) {
+        $uploadDir = 'uploads/';
+        $uploadFile = $uploadDir . basename($_FILES['profileImage']['name']);
 
-// Handle image upload
-if (!empty($_FILES['profileImage']['name'])) {
-    $uploadDir = 'uploads/';
-    $uploadFile = $uploadDir . basename($_FILES['profileImage']['name']);
+        if (move_uploaded_file($_FILES['profileImage']['tmp_name'], $uploadFile)) {
+            // Update the user's image path in the database
+            $updateImageSql = "UPDATE logins SET image = ? WHERE email = ?";
+            $stmt = mysqli_prepare($conn, $updateImageSql);
+            mysqli_stmt_bind_param($stmt, "ss", $uploadFile, $newEmail);
+            mysqli_stmt_execute($stmt);
 
-    if (move_uploaded_file($_FILES['profileImage']['tmp_name'], $uploadFile)) {
-        // Update the user's image path in the database
-        $updateImageSql = "UPDATE logins SET image = '$uploadFile' WHERE email = '$newEmail'";
-        $updateImageResult = mysqli_query($conn, $updateImageSql);
+            if (!$stmt) {
+                // Handle update error
+                die('Error updating image path in the database: ' . mysqli_error($conn));
+            }
 
-        if (!$updateImageResult) {
-            // Handle update error
-            die('Error updating image path in the database: ' . mysqli_error($conn));
+            // Update the session variable for the image
+            $_SESSION['image'] = $uploadFile;
+        } else {
+            // Handle image upload error
+            echo "Error uploading image.";
         }
-
-        // Update the session variable for the image
-        $_SESSION['image'] = $uploadFile;
-    } else {
-        // Handle image upload error
-        echo "Error uploading image.";
     }
-}
+
     // Update the email in the session as well
     $_SESSION['email'] = $newEmail;
     $_SESSION['fname'] = $newFname;
@@ -101,9 +106,9 @@ if (!empty($_FILES['profileImage']['name'])) {
                 <label for="profileImage">Change Profile Picture:</label>
                 <input type="file" name="profileImage" id="profileImage">
                 <label for="fname">Change First Name:</label>
-                <input type="text" name="fname" id="fname" value="<?php echo $name; ?>">
+                <input type="text" name="fname" id="fname" value="<?php echo isset($name) ? $name : ''; ?>">
                 <label for="lname">Change Last Name:</label>
-                <input type="text" name="lname" id="lname" value="<?php echo $row['lname']; ?>">
+                <input type="text" name="lname" id="lname" value="<?php echo isset($row['lname']) ? $row['lname'] : ''; ?>">
                 <label for="email">Change Email:</label>
                 <input type="email" name="email" id="email" value="<?php echo $email; ?>">
                 <input type="submit" value="Update">

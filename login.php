@@ -5,7 +5,7 @@ include 'connect.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
-
+    
     $sql = "SELECT id, fname, email, password, role, image FROM logins WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $email);

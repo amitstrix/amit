@@ -32,7 +32,7 @@ if ($result->num_rows > 0) {
         $_SESSION['image'] = $avatar;
         $_SESSION['role'] = $role;
 
-        header("Location: login.html");
+        header('Location: login.html');
         exit();
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;

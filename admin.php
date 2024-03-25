@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'header.php';
+///test
 include "connect.php";
 //yahs isset karka id ko get karna ha
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {

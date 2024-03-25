@@ -101,7 +101,7 @@ $conn->close();
 <br>
 <p><?php echo $_SESSION['description']; ?></p>
 <?php 
-$prize = rand(500, 1500);
+$prize = rand(500, 5000);
 
 echo "Prize $" . $prize . "<br><br>";
 ?>
@@ -119,17 +119,17 @@ echo "Prize $" . $prize . "<br><br>";
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-<form action="email.php" method="POST" enctype="multipart/form-data">
+<form action="emails.php" method="POST" enctype="multipart/form-data">
     <label>Name</label>
 <input type="name" name="name"><br> 
 <label>Email</label>
 <input type="email" name="email"><br>
 <label>Product Name</label>
-<input type="pname" name="pname" value="<?php echo $_SESSION['name']; ?>">
+<input type="pname" name="product_name" value="<?php echo $_SESSION['name']; ?>">
 <label>Prize</label>
-<input type="text" name="prize" value="<?php echo "$".$prize; ?>">
+<input type="text" name="price" value="<?php echo "$".$prize; ?>">
 <label>Messege</label>
-<textarea name="messege"></textarea><br>
+<textarea name="message"></textarea><br>
 <label>Subject</label>
 <textarea name="subject"></textarea><br>
 <label>Phone no.</label>
