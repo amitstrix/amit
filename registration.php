@@ -24,6 +24,8 @@ if ($result->num_rows > 0) {
             VALUES ('$fname', '$lname', '$email', '$password', '$avatar', '$role')";
 
     if ($conn->query($sql) === TRUE) {
+        header('Location: login.html');
+        exit();
         echo "Registered successfully";
 
         session_start();
@@ -32,8 +34,7 @@ if ($result->num_rows > 0) {
         $_SESSION['image'] = $avatar;
         $_SESSION['role'] = $role;
 
-        header('Location: login.html');
-        exit();
+       
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
